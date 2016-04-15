@@ -1,0 +1,91 @@
+#+TITLE: Circuit Stuff
+
+* Decoder
+	assign:
+	
+	| gate	| software |
+	|-------+----------|
+	| and 0 | ~A & ~B; |
+	| or 0	| ~A & B;	 |
+	| xor 0 | A & ~B;	 |
+	| not 0 | A & B;	 |
+
+* Using verilog
+** Decoder
+#+BEGIN_SRC verilog
+module test;
+reg A, B;
+wire and0, or0, xor0, not0;
+
+DECODER decoder(A, B, and0, xor0, not0);
+
+COMPU compu0(i0, i1, A, O, X, N);
+
+// this means we are connecting A above in compu0 to oput's A.
+// they are wired together/share the same name. Same for the rest of the
+// parameters
+
+OPUT oput(A,O,X,N, and0, or0, xor0, not0, oput);
+
+initial
+		begin
+				A=0;
+				B=0;
+				i0 = 0;
+				i1 = 0;
+				#5; // wait 5 units
+				$display("opcode=%b%b, operand = %b%b, o=%b," A0, B0, i0, i1, oput);
+		end
+endmodule
+#+END_SRC
+
+** COMPU/output
+
+The following represents AND, OR, NOT, XOR, etc. all OR'd
+
+#+BEGIN_SRC verilog
+module oput(A,O,X,N, and0, or0, xor0, not0, oput);
+reg A, O, X, N, ... not0;
+output oput;
+
+wire w0;
+wire w1;
+wire w2;
+wire w3;
+
+/* The following are all "wireX" */
+assign w0 = A & and0;
+assign w1 = O & or0;
+assign w2 = X & xor0;
+assign w3 = N & not0;
+
+assign oput = w0 | w1 | w2 | w3;
+
+endmodule;
+#+END_SRC
+** Doing stuff
+
+Opcodes:
+
+| A | B | Instruction |
+|---+---+-------------|
+| 0 | 0 | AND					|
+| 0 | 1 | OR					|
+| 1 | 0 | XOR					|
+| 1 | 1 | NOT					|
+
+* MIPS
+- Pipelined processor
+  1. Fetches instruction from instruction memory (cache memory)
+  2. Instruction decode
+  3. Execute
+  4. Memory interface (MEM). Memory read/write
+  5. Write back (write back to cache memory)
+
+Things that don't really work with the pipeline:
+- JMP
+- Race conditions between setting a register and using a recently set register
+  (data dependency)
+
+* Software
+- Assembler: QtSpim
