@@ -1,0 +1,18 @@
+# Assignment
+JK, he's not going to check the array copy assignment.
+
+Instead: Copy only the even numbers into the destination array.
+Inspect the least significant bit to see if number is even.
+
+Example:
+src: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+dest: [2, 4, 6, 8]
+
+
+# Actual Notes
+
+`jal` stands for jump and link. It jumps and places the return address into a register.
+This only applies for a single level of subroutine call.  More than one subroutine
+call must place the return address on the stack.
+
+Quote of the day: "Free market system won't work for my asshole. "
