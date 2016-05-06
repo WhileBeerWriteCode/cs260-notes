@@ -1,0 +1,4 @@
+Enter integer 1
+Enter integer 4
+sum = 5
+diff = -3

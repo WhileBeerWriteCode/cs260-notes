@@ -1,0 +1,16 @@
+operation code: 00 operand: 00 output: 0
+operation code: 00 operand: 01 output: 0
+operation code: 00 operand: 10 output: 0
+operation code: 00 operand: 11 output: 1
+operation code: 01 operand: 00 output: 0
+operation code: 01 operand: 01 output: 1
+operation code: 01 operand: 10 output: 1
+operation code: 01 operand: 11 output: 0
+operation code: 10 operand: 00 output: 0
+operation code: 10 operand: 01 output: 1
+operation code: 10 operand: 10 output: 1
+operation code: 10 operand: 11 output: 1
+operation code: 11 operand: 00 output: 1
+operation code: 11 operand: 01 output: 1
+operation code: 11 operand: 10 output: 0
+operation code: 11 operand: 11 output: 0
