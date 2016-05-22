@@ -37,6 +37,13 @@
     ################
     addi $sp, $sp 4               # fix position of stack pointer
 
+    #################
+    # print newline #
+    #################
+    li $v0, 4
+    la $a0, newline               # load register a0 with newline
+    syscall                       # execute
+
     ########
     # exit #
     ########
