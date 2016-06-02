@@ -4,10 +4,13 @@
   tcb1: .space 128
   tid: .word 1
 
-  taskzero_say: .asciiz "Hi I'm Task Zero!\n"
-  taskzero_bye: .asciiz "Bye from Task Zero!\n"
-  taskone_say: .asciiz "Hi I'm Task One!\n"
-  taskone_bye: .asciiz "Bye from Task One!\n"
+  str0:   .asciiz "123"
+  str1:   .asciiz "45678"
+
+  # taskzero_say: .asciiz "Hi I'm Task Zero!\n"
+  # taskzero_bye: .asciiz "Bye from Task Zero!\n"
+  # taskone_say: .asciiz "Hi I'm Task One!\n"
+  # taskone_bye: .asciiz "Bye from Task One!\n"
 
 .text
   .globl main
@@ -33,9 +36,6 @@
 
     savezero:
       la $t0, tcb0                      # load address of tcb0 (savezero)
-      lw $a0, 0($sp)                    # grab address of tcb0 from stack
-      addi $sp, $sp, 4                  # restore stack
-      #sw $a0, 8($t0)                    # store in tcb0 offset 8
 
       #TODO: Store other registers
       sw $2, 4($t0)
@@ -110,12 +110,11 @@
       lw $31, 120($t0)
 
       lw $t0, 28($t0)                   # restore register t0
+      addi $sp, $sp, 4                  # restore stack
       jr $ra                            # return to task 1
 
     saveone:
       la $t0, tcb1                      # load address of tcb1 (saveone)
-      lw $a0, 0($sp)                    # grab address of tcb1 from stack
-      addi $sp, $sp, 4                  # restore stack
       #sw $a0, 8($t1)                    # store in tcb1 offset 8
 
       #TODO: Store other registers
@@ -191,23 +190,95 @@
       lw $31, 120($t0)
 
       lw $t0, 28($t0)                   # restore register t0
+      addi $sp, $sp, 4                  # restore stack
       jr $ra                            # return to task 0
 
-  __TASK_0:
-    li $v0, 4 # entered task 0
-    la $a0, taskzero_say
-    syscall
-    jal __TASK_SWITCHER
-    la $a0, taskzero_bye
-    syscall
-    jal __TASK_SWITCHER
-    j __TASK_0
+  # __TASK_0:
+  #   li $v0, 4 # entered task 0
+  #   la $a0, taskzero_say
+  #   syscall
+  #   jal __TASK_SWITCHER
+  #   la $a0, taskzero_bye
+  #   syscall
+  #   jal __TASK_SWITCHER
+  #   j __TASK_0
+  #
+  # __TASK_1:
+  #   li $v0, 4 # entered task 1
+  #   la $a0, taskone_say
+  #   syscall
+  #   jal __TASK_SWITCHER
+  #   la $a0, taskone_bye
+  #   syscall
+  #   j __TASK_1
 
-  __TASK_1:
-    li $v0, 4 # entered task 1
-    la $a0, taskone_say
-    syscall
-    jal __TASK_SWITCHER
-    la $a0, taskone_bye
-    syscall
-    j __TASK_1
+# --- Alternate tasks ---
+
+__TASK_0:
+        add  $t0, $0, $0
+	jal __TASK_SWITCHER
+        addi $t1, $0, 10
+        la   $s0, str0
+	jal __TASK_SWITCHER
+beg0:
+        lb   $t2, ($s0)
+        beq  $t2, $0, quit0
+        sub  $t2, $t2, '0'
+        mult $t0, $t1
+        mflo $t0
+        add  $t0, $t0, $t2
+	jal __TASK_SWITCHER
+        add  $s0, $s0, 1
+        b    beg0
+quit0:
+	jal __TASK_SWITCHER
+	add  $v1, $0, $t0
+	add  $s0, $0, $v1
+	add  $a1, $0, $s0
+	jal __TASK_SWITCHER
+	add  $t5, $0, $a1
+	add  $t6, $0, $t5
+	addi $s0, $0, 1
+	add  $v0, $0, $s0
+	add  $a0, $0, $t6
+	jal __TASK_SWITCHER
+	syscall
+        j __TASK_0
+
+
+__TASK_1:
+        add  $t0, $0, $0    #( start of task 1)
+        addi $t1, $0, 10
+        la   $s0, str1
+beg1:
+        lb   $t2, ($s0)
+        beq  $t2, $0, quit1
+	jal __TASK_SWITCHER
+        sub  $t2, $t2, '0'    #( beg1 first return )
+        mult $t0, $t1
+	addi $t8, $0, 0
+        addi $s5, $t8, 0
+	add  $t8, $s5, $s5
+        addi $t8, $0, 0
+        addi $s5, $t8, 0
+	add  $t8, $s5, $s5
+        mflo $t0
+        add  $t0, $t0, $t2
+        add  $s0, $s0, 1
+        b    beg1
+quit1:
+	add  $v1, $0, $t0
+	add  $s0, $0, $v1
+	jal __TASK_SWITCHER
+	add  $a1, $0, $s0
+	add  $t5, $0, $a1
+	jal __TASK_SWITCHER
+	add  $t6, $0, $t5
+	jal __TASK_SWITCHER
+	addi $s0, $0, 1
+	add  $v0, $0, $s0
+	jal __TASK_SWITCHER
+	add  $a0, $0, $t6
+	jal __TASK_SWITCHER
+	syscall
+        j __TASK_1
